@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scoreboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    .scoreboard {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .player {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+    }
+    button {
+      padding: 5px 10px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="scoreboard">
+    <h1>Scoreboard</h1>
+    <div id="players">
+      <!-- Players will be dynamically added here -->
+    </div>
+    <button onclick="addPlayer()">Add Player</button>
+  </div>
+
+  <script>
+    let players = [];
+    
+    function renderPlayers() {
+      const playersContainer = document.getElementById('players');
+      playersContainer.innerHTML = ''; // Clear existing players
+
+      players.forEach((player, index) => {
+        playersContainer.innerHTML += `
+          <div class="player">
+            <span>${player.name}: <strong>${player.score}</strong></span>
+            <button onclick="addPoints(${index})">Add Point</button>
+          </div>
+        `;
+      });
+    }
+
+    function addPlayer() {
+      const playerName = prompt('Enter player name:');
+      if (playerName) {
+        players.push({ name: playerName, score: 0 });
+        renderPlayers();
+      }
+    }
+
+    function addPoints(playerIndex) {
+      players[playerIndex].score += 1;
+      renderPlayers();
+    }
+  </script>
+</body>
+</html>
+

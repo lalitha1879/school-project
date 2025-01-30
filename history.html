@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian History Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: lightyellow;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: brown;
+            font-family: 'Pacifico', cursive;
+        }
+
+        .question {
+            margin-bottom: 15px;
+        }
+
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 5px 0;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: red;
+            text-align: center;
+        }
+
+        .correct-answer {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Indian History Quiz</h1>
+        <div class="timer" id="timer">Time Remaining: 1:00</div>
+        <div id="quiz"></div>
+        <button onclick="submitQuiz()">Submit</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // Questions and Answers
+        const questions = [
+            {
+                question: "Who was the first President of India?",
+                options: ["Jawaharlal Nehru", "Dr. Rajendra Prasad", "Indira Gandhi", "Mahatma Gandhi"],
+                answer: "Dr. Rajendra Prasad"
+            },
+            {
+                question: "Who is known as the Father of the Nation in India?",
+                options: ["Jawaharlal Nehru", "Mahatma Gandhi", "Subhas Chandra Bose", "Bhagat Singh"],
+                answer: "Mahatma Gandhi"
+            },
+            {
+                question: "Which year did India gain independence?",
+                options: ["1945", "1947", "1950", "1952"],
+                answer: "1947"
+            },
+            {
+                question: "Who led the Salt March in 1930?",
+                options: ["Subhas Chandra Bose", "Mahatma Gandhi", "Jawaharlal Nehru", "Bhagat Singh"],
+                answer: "Mahatma Gandhi"
+            },
+            {
+                question: "Where was the first war of Indian independence fought in 1857?",
+                options: ["Delhi", "Lucknow", "Meerut", "Kolkata"],
+                answer: "Meerut"
+            },
+            {
+                question: "Who was the last Governor-General of independent India?",
+                options: ["Lord Mountbatten", "C. Rajagopalachari", "Jawaharlal Nehru", "Indira Gandhi"],
+                answer: "C. Rajagopalachari"
+            },
+            {
+                question: "Which Indian leader was known as 'Netaji'?",
+                options: ["Lal Bahadur Shastri", "Subhas Chandra Bose", "Mahatma Gandhi", "Jawaharlal Nehru"],
+                answer: "Subhas Chandra Bose"
+            },
+            {
+                question: "In which year did the Jallianwala Bagh massacre take place?",
+                options: ["1915", "1917", "1919", "1921"],
+                answer: "1919"
+            },
+            {
+                question: "Who was the first woman Prime Minister of India?",
+                options: ["Indira Gandhi", "Sonia Gandhi", "Sarojini Naidu", "Pratibha Patil"],
+                answer: "Indira Gandhi"
+            },
+            {
+                question: "Which river is considered sacred in India?",
+                options: ["Ganges", "Yamuna", "Sindhu", "Godavari"],
+                answer: "Ganges"
+            }
+        ];
+
+        const totalTime = 120; // 2 minutes in seconds
+        let timeRemaining = totalTime;
+        const timerElement = document.getElementById("timer");
+
+        // Countdown Timer
+        const timerInterval = setInterval(() => {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerElement.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+            timeRemaining--;
+
+            if (timeRemaining < 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "Time's up!";
+                submitQuiz();
+            }
+        }, 1000);
+
+        // Generate the quiz
+        const quizContainer = document.getElementById("quiz");
+        questions.forEach((q, index) => {
+            const questionElement = document.createElement("div");
+            questionElement.classList.add("question");
+            questionElement.innerHTML = `<p>${index + 1}. ${q.question}</p>`;
+            
+            const optionsList = document.createElement("ul");
+            optionsList.classList.add("options");
+            q.options.forEach(option => {
+                optionsList.innerHTML += `
+                    <li>
+                        <label>
+                            <input type="radio" name="question${index}" value="${option}">
+                            ${option}
+                        </label>
+                    </li>
+                `;
+            });
+            
+            questionElement.appendChild(optionsList);
+            quizContainer.appendChild(questionElement);
+        });
+
+        // Submit the quiz
+        function submitQuiz() {
+            clearInterval(timerInterval); // Stop the timer
+            let score = 0;
+            const totalQuestions = questions.length;
+            const resultContainer = document.getElementById("result");
+            resultContainer.innerHTML = ""; // Clear previous results
+
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const isCorrect = selectedOption && selectedOption.value === q.answer;
+
+                if (isCorrect) {
+                    score++;
+                } else {
+                    // Show the correct answer for incorrect questions
+                    const correctAnswer = document.createElement("div");
+                    correctAnswer.classList.add("correct-answer");
+                    correctAnswer.textContent = `Correct Answer for Question ${index + 1}: ${q.answer}`;
+                    resultContainer.appendChild(correctAnswer);
+                }
+            });
+
+            // Final result
+            const comment = score === totalQuestions
+                ? "Outstanding! You got a perfect score! 🌟"
+                : score >= totalQuestions * 0.8
+                ? "Great job! Keep up the good work! 🎉"
+                : score >= totalQuestions * 0.5
+                ? "Good effort! Practice makes perfect! 😊"
+                : "Don't worry! Keep practicing, and you'll improve! 🌈";
+
+            resultContainer.innerHTML += `<p>You scored ${score} out of ${totalQuestions}. ${comment}</p>`;
+        }
+    </script>
+</body>
+</html>

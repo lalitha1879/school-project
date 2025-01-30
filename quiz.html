@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Knowledge Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #FFFAF0; /* Pastel beige */
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #FFFFFF; /* White background for quiz box */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid #FFDAB9; /* Light peach border */
+        }
+
+        h1 {
+            text-align: center;
+            color: #FF69B4; /* Pastel pink for title */
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5em;
+        }
+
+        .question {
+            margin-bottom: 15px;
+        }
+
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 5px 0;
+        }
+
+        button {
+            background-color: #87CEFA; /* Light pastel blue */
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #00BFFF; /* Slightly darker blue on hover */
+        }
+
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            color: #32CD32; /* Lime green for success message */
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #DC143C; /* Crimson red for timer */
+            margin-bottom: 20px;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>General Knowledge Quiz</h1>
+        <div id="timer" class="timer">Time Remaining: 2:00</div>
+        <div id="quiz"></div>
+        <button onclick="submitQuiz()">Submit</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // Questions and Answers
+        const questions = [
+            {
+                question: "What is the tallest mountain in the world?",
+                options: ["Mount Kilimanjaro", "Mount Everest", "K2", "Mount Fuji"],
+                answer: "Mount Everest"
+            },
+            {
+                question: "Which is the smallest country in the world by area?",
+                options: ["Monaco", "Vatican City", "Malta", "San Marino"],
+                answer: "Vatican City"
+            },
+            {
+                question: "Which ocean is the largest by size?",
+                options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+                answer: "Pacific Ocean"
+            },
+            {
+                question: "Who painted the famous artwork 'Mona Lisa'?",
+                options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
+                answer: "Leonardo da Vinci"
+            },
+            {
+                question: "What is the national animal of India?",
+                options: ["Elephant", "Tiger", "Peacock", "Lion"],
+                answer: "Tiger"
+            },
+            {
+                question: "Which planet is known as the Red Planet?",
+                options: ["Earth", "Mars", "Jupiter", "Saturn"],
+                answer: "Mars"
+            },
+            {
+                question: "What is the largest desert in the world?",
+                options: ["Sahara Desert", "Gobi Desert", "Antarctic Desert", "Kalahari Desert"],
+                answer: "Antarctic Desert"
+            },
+            {
+                question: "Who invented the telephone?",
+                options: ["Alexander Graham Bell", "Thomas Edison", "Nikola Tesla", "Michael Faraday"],
+                answer: "Alexander Graham Bell"
+            },
+            {
+                question: "Which is the longest river in the world?",
+                options: ["Amazon River", "Nile River", "Yangtze River", "Mississippi River"],
+                answer: "Nile River"
+            },
+            {
+                question: "What is the capital of Japan?",
+                options: ["Tokyo", "Kyoto", "Osaka", "Nagoya"],
+                answer: "Tokyo"
+            }
+        ];
+
+        let totalTime = 120; // 2 minutes in seconds
+        let timeRemaining = totalTime;
+        const timerElement = document.getElementById("timer");
+
+        // Generate the quiz
+        const quizContainer = document.getElementById("quiz");
+        questions.forEach((q, index) => {
+            const questionElement = document.createElement("div");
+            questionElement.classList.add("question");
+            questionElement.innerHTML = `<p>${index + 1}. ${q.question}</p>`;
+            
+            const optionsList = document.createElement("ul");
+            optionsList.classList.add("options");
+            q.options.forEach(option => {
+                optionsList.innerHTML += `
+                    <li>
+                        <label>
+                            <input type="radio" name="question${index}" value="${option}">
+                            ${option}
+                        </label>
+                    </li>
+                `;
+            });
+            
+            questionElement.appendChild(optionsList);
+            quizContainer.appendChild(questionElement);
+        });
+
+        // Countdown Timer
+        const timerInterval = setInterval(() => {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerElement.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+            timeRemaining--;
+
+            if (timeRemaining < 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "Time's up!";
+                submitQuiz();
+            }
+        }, 1000);
+
+        // Submit the quiz
+        function submitQuiz() {
+            let score = 0;
+            const resultContainer = document.getElementById("result");
+
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const correctAnswer = q.answer;
+                if (selectedOption && selectedOption.value === correctAnswer) {
+                    score++;
+                } else {
+                    const questionElement = document.querySelector(`.question:nth-child(${index + 1})`);
+                    const feedback = document.createElement("p");
+                    feedback.textContent = `Correct answer: ${correctAnswer}`;
+                    feedback.style.color = "red";
+                    questionElement.appendChild(feedback);
+                }
+            });
+
+            const totalQuestions = questions.length;
+
+            let comment = "";
+            if (score === totalQuestions) {
+                comment = "Outstanding! You got a perfect score! 🌟";
+            } else if (score >= totalQuestions * 0.8) {
+                comment = "Great job! You're a quiz master! 🎉";
+            } else if (score >= totalQuestions * 0.5) {
+                comment = "Good effort! Keep learning and trying! 😊";
+            } else {
+                comment = "Don't worry! Keep practicing, and you'll do better next time! 🌈";
+            }
+
+            resultContainer.textContent = `You scored ${score} out of ${totalQuestions}. ${comment}`;
+        }
+    </script>
+</body>
+</html>

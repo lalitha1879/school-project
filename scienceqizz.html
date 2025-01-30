@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pacifico', cursive;
+            margin: 20px;
+            background-color: #0A1931; /* Dark Blue - Science Theme */
+            color: white;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #D4E6F1; /* Light Blue - Clean Science Look */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            font-family: 'Pacifico', cursive;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin: 5px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: red;
+            text-align: center;
+        }
+        .correct-answer {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Science Quiz</h1>
+        <div class="timer" id="timer">Time Remaining: 2:00</div>
+        <div id="quiz"></div>
+        <button onclick="submitQuiz()">Submit</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // Questions and Answers
+        const questions = [
+            {
+                question: "What is the chemical symbol for water?",
+                options: ["H2O", "O2", "CO2", "H2"],
+                answer: "H2O"
+            },
+            {
+                question: "What planet is known as the Red Planet?",
+                options: ["Earth", "Mars", "Jupiter", "Saturn"],
+                answer: "Mars"
+            },
+            {
+                question: "What gas do plants absorb from the air during photosynthesis?",
+                options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+                answer: "Carbon Dioxide"
+            },
+            {
+                question: "Which part of the plant conducts photosynthesis?",
+                options: ["Root", "Stem", "Leaf", "Flower"],
+                answer: "Leaf"
+            },
+            {
+                question: "What is the hardest natural substance on Earth?",
+                options: ["Gold", "Iron", "Diamond", "Graphite"],
+                answer: "Diamond"
+            },
+            {
+                question: "What is the chemical formula for methane?",
+                options: ["CH4", "C2H6", "C3H8", "C4H10"],
+                answer: "CH4"
+            },
+            {
+                question: "What is the powerhouse of the cell?",
+                options: ["Nucleus", "Mitochondria", "Ribosome", "Chloroplast"],
+                answer: "Mitochondria"
+            },
+            {
+                question: "Which element has the atomic number 1?",
+                options: ["Oxygen", "Hydrogen", "Carbon", "Nitrogen"],
+                answer: "Hydrogen"
+            },
+            {
+                question: "What is the process by which a caterpillar becomes a butterfly?",
+                options: ["Metamorphosis", "Reproduction", "Fusion", "Mitosis"],
+                answer: "Metamorphosis"
+            },
+            {
+                question: "What is the speed of light in a vacuum?",
+                options: ["300,000 km/s", "150,000 km/s", "250,000 km/s", "350,000 km/s"],
+                answer: "300,000 km/s"
+            }
+        ];
+
+        const totalTime = 120; // 2 minutes in seconds
+        let timeRemaining = totalTime;
+        const timerElement = document.getElementById("timer");
+
+        // Countdown Timer
+        const timerInterval = setInterval(() => {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerElement.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+            timeRemaining--;
+
+            if (timeRemaining < 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "Time's up!";
+                submitQuiz();
+            }
+        }, 1000);
+
+        // Generate the quiz
+        const quizContainer = document.getElementById("quiz");
+        questions.forEach((q, index) => {
+            const questionElement = document.createElement("div");
+            questionElement.classList.add("question");
+            questionElement.innerHTML = `<p>${index + 1}. ${q.question}</p>`;
+            
+            const optionsList = document.createElement("ul");
+            optionsList.classList.add("options");
+            q.options.forEach(option => {
+                optionsList.innerHTML += `
+                    <li>
+                        <label>
+                            <input type="radio" name="question${index}" value="${option}">
+                            ${option}
+                        </label>
+                    </li>
+                `;
+            });
+            
+            questionElement.appendChild(optionsList);
+            quizContainer.appendChild(questionElement);
+        });
+
+        // Submit the quiz
+        function submitQuiz() {
+            clearInterval(timerInterval); // Stop the timer
+            let score = 0;
+            const totalQuestions = questions.length;
+            const resultContainer = document.getElementById("result");
+            resultContainer.innerHTML = ""; // Clear previous results
+
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const isCorrect = selectedOption && selectedOption.value === q.answer;
+
+                if (isCorrect) {
+                    score++;
+                } else {
+                    // Show the correct answer for incorrect questions
+                    const correctAnswer = document.createElement("div");
+                    correctAnswer.classList.add("correct-answer");
+                    correctAnswer.textContent = `Correct Answer for Question ${index + 1}: ${q.answer}`;
+                    resultContainer.appendChild(correctAnswer);
+                }
+            });
+
+            // Final result
+            const comment = score === totalQuestions
+                ? "Outstanding! You got a perfect score! 🌟"
+                : score >= totalQuestions * 0.8
+                ? "Great job! Keep up the good work! 🎉"
+                : score >= totalQuestions * 0.5
+                ? "Good effort! Practice makes perfect! 😊"
+                : "Don't worry! Keep practicing, and you'll improve! 🌈";
+
+            resultContainer.innerHTML += `<p>You scored ${score} out of ${totalQuestions}. ${comment}</p>`;
+        }
+    </script>
+</body>
+</html>
